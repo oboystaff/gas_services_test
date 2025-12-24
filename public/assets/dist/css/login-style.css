@@ -1,0 +1,73 @@
+@import url("//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css");
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+.login-block {
+    height: 100vh;
+    background: linear-gradient(to bottom, #FFB88C, #DE6262);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.login-container {
+    display: flex;
+    width: 100%;
+    max-width: 1000px;
+    height: 60vh;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 15px 20px 0px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.login-sec {
+    padding: 40px;
+    background-color: #fff;
+    flex: 1;
+    display: block;
+}
+
+.login-form {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.btn-login {
+    background: #DE6262;
+    color: #fff;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.banner-sec {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eee;
+}
+
+.banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0 10px 10px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .banner-sec {
+        display: none;
+    }
+}
