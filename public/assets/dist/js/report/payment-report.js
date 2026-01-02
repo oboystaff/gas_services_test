@@ -75,6 +75,10 @@ $(document).ready(function () {
                 ],
                 dom: 'lBfrtip',
                 buttons: ['copyHtml5', 'excelHtml5', 'pdfHtml5', 'csvHtml5'],
+                lengthMenu: [
+                    [10, 25, 50, 100, -1],
+                    [10, 25, 50, 100, "All"]
+                ],
                 footerCallback: function (row, data, start, end, display) {
                     var api = this.api();
                     // Remove the formatting to get integer data for summation

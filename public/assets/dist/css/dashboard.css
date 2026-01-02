@@ -1,0 +1,135 @@
+.stats-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+    overflow: hidden;
+}
+
+.stats-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.stats-card-body {
+    padding: 24px;
+    text-align: center;
+}
+
+.stats-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 28px;
+}
+
+.stats-icon.cyan {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stats-icon.danger {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.stats-icon.warning {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.stats-icon.success {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.stats-icon.info {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.stats-icon.purple {
+    background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+}
+
+.stats-icon.orange {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.stats-icon.teal {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+}
+
+.stats-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.stats-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.chart-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+}
+
+.chart-card .card-body {
+    padding: 24px;
+}
+
+.chart-card .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.table-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #f0f0f0;
+    height: 100%;
+}
+
+.table-card .card-body {
+    padding: 24px;
+}
+
+.table-card .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.table-card thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.table-card .table {
+    margin-bottom: 0;
+}
+
+.table-card .table td {
+    vertical-align: middle;
+    padding: 12px 8px;
+    font-size: 14px;
+}
+
+.table-card .table th {
+    padding: 12px 8px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+}

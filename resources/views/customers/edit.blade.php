@@ -70,6 +70,22 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group mt-3">
+                                        <label>Secondary Contact</label>
+                                        <input type="text"
+                                            class="form-control @error('secondary_contact') is-invalid @enderror"
+                                            name="secondary_contact" placeholder="Secondary Contact"
+                                            value="{{ $customer->secondary_contact }}" />
+
+                                        @error('secondary_contact')
+                                            <span class="invalid-feedback" role="alert">
+                                                {{ $message }}
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group mt-3">
                                         <label>Customer Branch</label>
                                         <select
                                             class="form-control default-select select2 @error('community_id') is-invalid @enderror"
@@ -89,7 +105,9 @@
                                         @enderror
                                     </div>
                                 </div>
+                            </div>
 
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group mt-3">
                                         <label>Outlet</label>
@@ -111,11 +129,9 @@
                                         @enderror
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="row">
                                 <div class="col-md-6">
-                                    <div class="form-group">
+                                    <div class="form-group" style="margin-top:-10px">
                                         <div class="form-check">
                                             <input type="checkbox" id="threshold_check" class="form-check-input"
                                                 name="threshold" value="Y"
@@ -125,11 +141,9 @@
                                             </label>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div class="col-md-6">
                                     <div class="form-group threshold-amount-group"
-                                        style="{{ old('threshold', $customer->threshold_amount ? true : false) ? '' : 'display:none;' }}">
+                                        style="margin-top:-20px; {{ old('threshold', $customer->threshold_amount ? true : false) ? '' : 'display:none;' }}">
                                         <label>Threshold Amount</label>
                                         <input type="text"
                                             class="form-control @error('threshold_amount') is-invalid @enderror"
@@ -138,6 +152,22 @@
                                             value="{{ old('threshold_amount', $customer->threshold_amount) }}" />
 
                                         @error('threshold_amount')
+                                            <span class="invalid-feedback" role="alert">
+                                                {{ $message }}
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mt-3">
+                                        <label id="due_date">Credit Line</label>
+                                        <input type="text" class="form-control @error('due_date') is-invalid @enderror"
+                                            name="due_date" placeholder="Credit Line" value="{{ $customer->due_date }}" />
+
+                                        @error('due_date')
                                             <span class="invalid-feedback" role="alert">
                                                 {{ $message }}
                                             </span>

@@ -48,6 +48,7 @@ $(document).ready(function () {
             $('#zero_config').DataTable({
                 processing: true,
                 serverSide: true,
+                destroy: true,
                 ajax: {
                     url: url,
                     data: {
@@ -66,13 +67,20 @@ $(document).ready(function () {
                     {data: 'customer_id', name: 'customer_id'},
                     {data: 'name', name: 'name'},
                     {data: 'contact', name: 'contact'},
-                    {data: 'community', name: 'community'},
+                    {data: 'secondary_contact', name: 'secondary_contact'},
+                    {data: 'customer_branch', name: 'customer_branch'},
                     {data: 'branch', name: 'branch'},
+                    {data: 'threshold_amount', name: 'threshold_amount'},
+                    {data: 'due_date', name: 'due_date'},
                     {data: 'created_by', name: 'created_by'},
                     {data: 'created_at', name: 'created_at'}
                 ],
                 dom: 'lBfrtip',
                 buttons: ['copyHtml5', 'excelHtml5', 'pdfHtml5', 'csvHtml5'],
+                lengthMenu: [
+                    [10, 25, 50, 100, -1],
+                    [10, 25, 50, 100, "All"]
+                ],
                 footerCallback: function (row, data, start, end, display) {
                     var api = this.api();
                     // Remove the formatting to get integer data for summation

@@ -231,7 +231,7 @@
                                         <label>Cheque No.</label>
                                         <input type="text"
                                             class="form-control @error('cheque_no') is-invalid @enderror"
-                                            name="cheque_no" placeholder="Amount Paid (GHS)" />
+                                            name="cheque_no" placeholder="Cheque No." />
 
                                         @error('cheque_no')
                                             <span class="invalid-feedback" role="alert">

@@ -24,8 +24,10 @@ class UpdateCustomerRequest extends FormRequest
         return [
             'name' => ['required', 'string'],
             'contact' => ['required', 'string'],
+            'secondary_contact' => ['nullable', 'string'],
             'community_id' => ['required', 'string', 'exists:communities,id'],
-            'branch_id' => ['required', 'string', 'exists:branches,id']
+            'branch_id' => ['required', 'string', 'exists:branches,id'],
+            'due_date' => ['nullable', 'numeric']
         ];
     }
 }

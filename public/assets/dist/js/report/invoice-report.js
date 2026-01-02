@@ -55,6 +55,11 @@ $(document).ready(function () {
                         branch_id: branch_id,
                         report_type: report_type
                     },
+                    dataSrc: function (json) {
+                        $('#amount_total').text(json.totalInvoice);
+                        $('#kg_total').text(json.totalKG);
+                        return json.data;
+                    },
                     error: function(xhr, status, errorThrown) {
                         console.error('Ajax error:', errorThrown);
                     }
@@ -76,6 +81,10 @@ $(document).ready(function () {
                 ],
                 dom: 'lBfrtip',
                 buttons: ['copyHtml5', 'excelHtml5', 'pdfHtml5', 'csvHtml5'],
+                lengthMenu: [
+                    [10, 25, 50, 100, -1],
+                    [10, 25, 50, 100, "All"]
+                ],
                 footerCallback: function (row, data, start, end, display) {
                     var api = this.api();
                     // Remove the formatting to get integer data for summation
@@ -94,17 +103,8 @@ $(document).ready(function () {
                             return intVal(a) + intVal(b);
                         }, 0);
 
-                    var amount_total = api
-                        .column(6)
-                        .data()
-                        .reduce(function (a, b) {
-                            return intVal(a) + intVal(b);
-                        }, 0);
-
                     // Update status DIV
                     $('#title').html('Total');
-                    $('#kg_total').html(format_money(kg_total));
-                    $('#amount_total').html(format_money(amount_total));
                 }
             });
         } catch (err) {

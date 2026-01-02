@@ -20,6 +20,7 @@ use App\Http\Controllers\Vehicle;
 use App\Http\Controllers\Invoice;
 use App\Http\Controllers\Payment;
 use App\Http\Controllers\Notification;
+use App\Http\Controllers\DueDate;
 
 
 
@@ -227,4 +228,13 @@ Route::group(['prefix' => 'notification', 'middleware' => 'auth:sanctum'], funct
     Route::get('/show/{notification}', [Notification\NotificationController::class, 'show'])->name('notifications.show');
     Route::get('/edit/{notification}', [Notification\NotificationController::class, 'edit'])->name('notifications.edit');
     Route::post('/update/{notification}', [Notification\NotificationController::class, 'update'])->name('notifications.update');
+});
+
+Route::group(['prefix' => 'due-date', 'middleware' => 'auth:sanctum'], function () {
+    Route::get('/', [DueDate\DueDateController::class, 'index'])->name('due-dates.index');
+    Route::get('/create', [DueDate\DueDateController::class, 'create'])->name('due-dates.create');
+    Route::post('/create', [DueDate\DueDateController::class, 'store'])->name('due-dates.store');
+    Route::get('/show/{dueDate}', [DueDate\DueDateController::class, 'show'])->name('due-dates.show');
+    Route::get('/edit/{dueDate}', [DueDate\DueDateController::class, 'edit'])->name('due-dates.edit');
+    Route::post('/update/{dueDate}', [DueDate\DueDateController::class, 'update'])->name('due-dates.update');
 });

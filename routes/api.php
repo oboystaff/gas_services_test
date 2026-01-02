@@ -73,7 +73,7 @@ Route::group(['prefix' => 'sale', 'middleware' => 'auth:sanctum'], function () {
 
 Route::get('/ussd/generate/token', [USSD\USSDController::class, 'generateToken']);
 
-Route::group(['prefix' => 'ussd', 'middleware' => 'auth:sanctum'], function () {
+Route::group(['prefix' => 'ussd', 'middleware' => 'auth:api'], function () {
     Route::post('/gas/request/create', [USSD\USSDController::class, 'store']);
     Route::post('/converter', [USSD\USSDController::class, 'convert']);
     Route::get('/customer/balance/{id}', [USSD\USSDController::class, 'balance']);

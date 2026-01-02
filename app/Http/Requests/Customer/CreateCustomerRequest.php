@@ -24,9 +24,11 @@ class CreateCustomerRequest extends FormRequest
         return [
             'name' => ['required', 'string'],
             'contact' => ['nullable', 'string', 'unique:customers,contact'],
+            'secondary_contact' => ['nullable', 'string'],
             'community_id' => ['required', 'array'],
             'community_id.*' => ['required', 'exists:communities,id'],
-            'branch_id' => ['required', 'string', 'exists:branches,id']
+            'branch_id' => ['required', 'string', 'exists:branches,id'],
+            'due_date' => ['nullable', 'numeric']
         ];
     }
 }

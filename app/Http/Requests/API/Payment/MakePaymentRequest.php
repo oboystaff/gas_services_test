@@ -26,6 +26,7 @@ class MakePaymentRequest extends FormRequest
             'amount' => ['required', 'numeric'],
             'payment_mode' => ['required', 'string', 'in:momo'],
             'payment_source' => ['required', 'string', 'in:USSD'],
+            'momo_number' => ['required', 'string'],
             'transaction_id' => ['required', 'string'],
             'transaction_status' => ['required', 'string', 'in:Success,Failed']
         ];

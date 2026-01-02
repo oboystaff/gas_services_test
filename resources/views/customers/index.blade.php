@@ -3,6 +3,7 @@
 @section('page-styles')
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/extra-libs/multicheck/multicheck.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/dist/css/datatable.css') }}" />
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
 @endsection
 
@@ -44,9 +45,11 @@
                                         <th>Customer ID</th>
                                         <th>Name</th>
                                         <th>Contact</th>
+                                        <th>Secondary Contact</th>
                                         <th>Customer Branch</th>
                                         <th>Outlet</th>
                                         <th>Threshold Amount</th>
+                                        <th>Credit Line</th>
                                         <th>Created By</th>
                                         <th>Created Date</th>
                                         <th>Action</th>
@@ -63,6 +66,7 @@
                                             <td>{{ $customer->customer_id }}</td>
                                             <td>{{ $customer->name }}</td>
                                             <td>{{ $customer->contact ?? 'N/A' }}</td>
+                                            <td>{{ $customer->secondary_contact ?? 'N/A' }}</td>
                                             <td>
                                                 @php
                                                     $communityIds = $customer->community_id;
@@ -86,6 +90,7 @@
                                             </td>
                                             <td>{{ $customer->branch->name ?? 'N/A' }}</td>
                                             <td>{{ $customer->threshold_amount ?? '0.0' }}</td>
+                                            <td>{{ $customer->due_date ? $customer->due_date . ' day(s)' : 'N/A' }}</td>
                                             <td>{{ $customer->createdBy->name ?? 'N/A' }}</td>
                                             <td>{{ $customer->created_at }}</td>
                                             <td>

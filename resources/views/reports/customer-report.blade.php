@@ -115,8 +115,11 @@
                                         <th>Customer ID</th>
                                         <th>Name</th>
                                         <th>Contact</th>
-                                        <th>Community</th>
-                                        <th>Branch</th>
+                                        <th>Secondary Contact</th>
+                                        <th>Customer Branch</th>
+                                        <th>Outlet</th>
+                                        <th>Threshold Amount</th>
+                                        <th>Credit Line</th>
                                         <th>Created By</th>
                                         <th>Created Date</th>
                                     </tr>

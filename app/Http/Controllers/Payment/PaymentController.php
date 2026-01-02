@@ -65,7 +65,6 @@ class PaymentController extends Controller
         $data = $request->validated();
         $data['created_by'] = $request->user()->id;
         $data['outstanding'] = 0;
-        $data['amount'] = $data['amount_paid'];
         $data['branch_id'] = $request->input('branch_id') ?? '';
         $data['payment_source'] = "WEB";
         $data['transaction_status'] = "Success";
@@ -74,6 +73,14 @@ class PaymentController extends Controller
         $data['reference'] = $request->input('reference') ?? null;
 
         $payment = Payment::create($data);
+
+        $totalPayment = Payment::where('invoice_no', $data['invoice_no'])
+            ->selectRaw('SUM(COALESCE(amount_paid,0) + COALESCE(withholding_tax_amount,0)) as total')
+            ->value('total');
+
+        if ((float) $totalPayment >= (float) $data['amount']) {
+            Invoice::where('invoice_no',  $data['invoice_no'])->update(['due_date' => null]);
+        }
 
         dispatch(new SendPaymentSMS($payment));
 

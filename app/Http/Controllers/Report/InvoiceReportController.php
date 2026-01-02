@@ -24,6 +24,11 @@ class InvoiceReportController extends Controller
                 })
                 ->get();
 
+            $totalInvoice = Invoice::query()
+                ->when(!empty($request->user()->branch_id), function ($query) use ($request) {
+                    $query->where('branch_id', $request->user()->branch_id);
+                })
+                ->sum('amount');
 
             if (request()->ajax()) {
 
@@ -39,6 +44,9 @@ class InvoiceReportController extends Controller
                             $query->where('branch_id', $request->branch_id);
                         })
                         ->get();
+
+                    $totalInvoice = (clone $data)->sum('amount');
+                    $totalKG = (clone $data)->sum('kg');
 
                     return datatables()->of($data)
                         ->addIndexColumn()
@@ -66,6 +74,10 @@ class InvoiceReportController extends Controller
                         ->editColumn('created_at', function (Invoice $invoice) {
                             return $invoice->created_at;
                         })
+                        ->with([
+                            'totalInvoice' => number_format($totalInvoice, 2),
+                            'totalKG' => number_format($totalKG, 2)
+                        ])
                         ->make(true);
                 } else {
                 }

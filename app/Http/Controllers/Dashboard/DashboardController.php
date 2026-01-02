@@ -206,6 +206,14 @@ class DashboardController extends Controller
             ->selectRaw('SUM(inv.total_invoiced - COALESCE(pay.total_paid,0)) as receivables')
             ->value('receivables');
 
+        $totalDueDates = Invoice::orderBy('created_at', 'DESC')
+            ->when(!empty($request->user()->branch_id), function ($query) use ($request) {
+                $query->where('branch_id', $request->user()->branch_id);
+            })
+            ->whereNotNull('due_date')
+            ->whereDate('due_date', '<=', Carbon::today())
+            ->count();
+
         $total = [
             'dailySales' => isset($dailySales) ? number_format($dailySales, 2) : 0,
             'weeklySales' => isset($weeklySales) ? number_format($weeklySales, 2) : 0,
@@ -221,7 +229,8 @@ class DashboardController extends Controller
             'totalCashAtHand' => isset($totalCashAtHand) ? number_format($totalCashAtHand, 2) : 0,
             'totalPendingRequest' => isset($totalPendingRequest) ? $totalPendingRequest : 0,
             'receivables' => isset($totalReceivables) ? number_format($totalReceivables, 2) : 0,
-            'completedDeliveries' => isset($completedDeliveries) ? $completedDeliveries : 0
+            'completedDeliveries' => isset($completedDeliveries) ? $completedDeliveries : 0,
+            'totalDueDates' => isset($totalDueDates) ? $totalDueDates : 0
         ];
 
         return view('dashboard.operational', compact('total', 'months', 'debtors', 'pageTitle'));

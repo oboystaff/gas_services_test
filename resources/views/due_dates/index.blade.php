@@ -83,52 +83,12 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center" style="margin-bottom: 30px;">
-                            <h5 class="card-title">View Invoices</h5>
+                            <h5 class="card-title">View Invoices Due</h5>
 
-                            <a href="{{ route('invoices.create') }}" type="button" class="btn btn-primary">
+                            {{-- <a href="{{ route('invoices.create') }}" type="button" class="btn btn-primary">
                                 <i class="fa fa-plus" aria-hidden="true"></i> New Invoice
-                            </a>
+                            </a> --}}
                         </div>
-
-                        <hr>
-                        <form method="GET" action="{{ route('invoices.index') }}" class="mb-3">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <label class="form-label">Filter by Month</label>
-                                    <select name="month" class="form-control form-select">
-                                        <option value="">-- Select Month --</option>
-                                        @foreach (range(1, 12) as $m)
-                                            <option value="{{ $m }}"
-                                                {{ request('month') == $m ? 'selected' : '' }}>
-                                                {{ date('F', mktime(0, 0, 0, $m, 1)) }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="col-md-3">
-                                    <label class="form-label">Filter by Year</label>
-                                    <select name="year" class="form-control form-select">
-                                        <option value="">-- Select Year --</option>
-                                        @for ($y = 2025; $y <= now()->year; $y++)
-                                            <option value="{{ $y }}"
-                                                {{ request('year') == $y ? 'selected' : '' }}>
-                                                {{ $y }}
-                                            </option>
-                                        @endfor
-                                    </select>
-                                </div>
-
-                                <div class="col-md-3 d-flex align-items-end">
-                                    <button class="btn btn-warning w-100" type="submit">Search</button>
-                                </div>
-
-                                <div class="col-md-3 d-flex align-items-end">
-                                    <a href="{{ route('invoices.index') }}" class="btn btn-secondary w-100">Reset</a>
-                                </div>
-                            </div>
-                        </form>
-                        <hr>
 
                         <div class="table-responsive">
                             <table id="zero_config" class="table table-striped table-bordered">
@@ -147,6 +107,7 @@
                                         <th>Driver</th>
                                         <th>Vehicle</th>
                                         <th>Due Date</th>
+                                        <th>Days Overdue</th>
                                         <th>Created By</th>
                                         <th>Created Date</th>
                                         <th>Action</th>
@@ -169,6 +130,14 @@
                                             <td>{{ $invoice->gasRequest->driverAssigned->vehicle->vehicle_number ?? 'N/A' }}
                                             </td>
                                             <td>{{ $invoice->due_date ?? 'N/A' }}</td>
+                                            <td>
+                                                @if ($invoice->due_date && \Carbon\Carbon::parse($invoice->due_date)->lt(\Carbon\Carbon::today()))
+                                                    {{ \Carbon\Carbon::parse($invoice->due_date)->diffInDays(\Carbon\Carbon::today()) }}
+                                                    day(s)
+                                                @else
+                                                    0 day(s)
+                                                @endif
+                                            </td>
                                             <td>{{ $invoice->createdBy->name ?? 'N/A' }}</td>
                                             <td>{{ $invoice->created_at }}</td>
                                             <td>
@@ -195,27 +164,10 @@
                                                     </div>
                                                     <div class="dropdown-menu dropdown-menu-end">
                                                         <div class="py-2">
-                                                            <a class="dropdown-item"
+                                                            {{-- <a class="dropdown-item"
                                                                 href="{{ route('invoices.show', $invoice) }}"
                                                                 target="_blank">View Invoice
-                                                            </a>
-
-                                                            @can('invoices.update')
-                                                                <a class="dropdown-item"
-                                                                    href="{{ route('invoices.edit', $invoice) }}">Edit Invoice
-                                                                </a>
-                                                            @endcan
-
-                                                            <a class="dropdown-item"
-                                                                href="{{ route('payments.create', $invoice) }}">Make
-                                                                Payment
-                                                            </a>
-                                                            <a class="dropdown-item pass_cd" href="javascript:;"
-                                                                data-bs-toggle="modal" data-bs-target="#reject-preview"
-                                                                data-invoice_no="{{ $invoice->invoice_no }}"
-                                                                data-customer_id="{{ $invoice->customer_id }}">
-                                                                Pass Credit & Debit Note
-                                                            </a>
+                                                            </a> --}}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -238,73 +190,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="modal fade" id="reject-preview">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Pass Credit & Debit Note</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form method="POST" action="{{ route('invoices.creditDebit') }}">
-                            @csrf
-
-                            <input type='hidden' name="invoice_no" value="">
-                            <input type="hidden" name="customer_id" value="">
-
-                            <div class="row">
-                                <div class="col-md-12 mb-4">
-                                    <label class="form-label">Note Type</label>
-                                    <select class="form-control form-select @error('note_type') is-invalid @enderror"
-                                        name="note_type" required>
-                                        <option disabled selected>Select Note Type</option>
-                                        <option value="credit">Credit</option>
-                                        <option value="debit">Debit</option>
-                                    </select>
-
-                                    @error('note_type')
-                                        <span class="invalid-feedback" role="alert">
-                                            {{ $message }}
-                                        </span>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-4 col-md-12">
-                                    <label class="form-label">Amount</label>
-                                    <input type="text" name="amount"
-                                        class="form-control @error('amount') is-invalid @enderror" placeholder="Amount"
-                                        required>
-
-                                    @error('amount')
-                                        <span class="invalid-feedback" role="alert">
-                                            {{ $message }}
-                                        </span>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-4 col-md-12">
-                                    <label class="form-label">Reason</label>
-                                    <textarea class="form-control" name="reason" rows="5" cols="10" placeholder="Enter your reason here..."
-                                        required></textarea>
-
-                                    @error('reason')
-                                        <span class="invalid-feedback" role="alert">
-                                            {{ $message }}
-                                        </span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-md-12 d-flex justify-content-end">
-                                <button type="submit" class="btn btn-primary btn-sm">Submit</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 @endsection
 
@@ -316,16 +201,4 @@
     <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="{{ asset('assets/dist/js/common.js?t=' . time()) }}"></script>
-    <script>
-        $(document).ready(function() {
-
-            $(document).on('click', '.pass_cd', function() {
-                let invoiceNo = $(this).data('invoice_no');
-                let customerId = $(this).data('customer_id');
-
-                $('input[name="invoice_no"]').val(invoiceNo);
-                $('input[name="customer_id"]').val(customerId);
-            });
-        });
-    </script>
 @endsection

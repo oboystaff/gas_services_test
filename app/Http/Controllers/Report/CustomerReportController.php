@@ -59,8 +59,30 @@ class CustomerReportController extends Controller
                         ->editColumn('contact', function (Customer $customer) {
                             return $customer->contact ?? 'N/A';
                         })
-                        ->editColumn('community', function (Customer $customer) {
-                            return $customer->community->name ?? 'N/A';
+                        ->editColumn('secondary_contact', function (Customer $customer) {
+                            return $customer->secondary_contact ?? 'N/A';
+                        })
+                        ->editColumn('threshold_amount', function (Customer $customer) {
+                            return number_format($customer->threshold_amount, 2) ?? '0.0';
+                        })
+                        ->editColumn('due_date', function (Customer $customer) {
+                            return $customer->due_date ? $customer->due_date . ' day(s)' : 'N/A';
+                        })
+                        ->editColumn('customer_branch', function (Customer $customer) {
+                            $communityIds = $customer->community_id;
+
+                            if (is_string($communityIds)) {
+                                $decoded = json_decode($communityIds, true);
+                                $communityIds = is_array($decoded) ? $decoded : [$communityIds];
+                            } elseif (is_int($communityIds)) {
+                                $communityIds = [$communityIds];
+                            }
+
+                            $communityNames = Community::whereIn('id', $communityIds)
+                                ->pluck('name')
+                                ->toArray();
+
+                            return implode(', ', $communityNames) ?: 'N/A';
                         })
                         ->editColumn('created_at', function (Customer $customer) {
                             return $customer->created_at;

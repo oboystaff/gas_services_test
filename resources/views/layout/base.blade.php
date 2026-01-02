@@ -214,6 +214,14 @@
                             </li>
                         @endcan
 
+                        @can('payments.view')
+                            <li class="sidebar-item">
+                                <a class="sidebar-link waves-effect waves-dark sidebar-link"
+                                    href="{{ route('due-dates.index') }}" aria-expanded="false"><i
+                                        class="mdi mdi-calendar"></i><span class="hide-menu">Invoices Due</span></a>
+                            </li>
+                        @endcan
+
                         @canany(['users.view', 'branches.view', 'communities.view', 'rates.view', 'agents.view',
                             'roles.view', 'permissions.view', 'drivers.view', 'vehicles.view'])
                             <li class="sidebar-item">
