@@ -121,7 +121,7 @@ class InvoiceController extends Controller
 
         if (!empty($customer->due_date)) {
             $currentDate = now();
-            $dueDate = $currentDate->copy()->addMonth()->day($customer->due_date)->setTimeFrom($currentDate);
+            $dueDate = $currentDate->copy()->addDays((int) $customer->due_date)->setTimeFrom($currentDate);
             $data['due_date'] = $dueDate ?? null;
         }
 

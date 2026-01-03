@@ -129,14 +129,31 @@
                                             <td>{{ $invoice->gasRequest->driverAssigned->name ?? 'N/A' }}</td>
                                             <td>{{ $invoice->gasRequest->driverAssigned->vehicle->vehicle_number ?? 'N/A' }}
                                             </td>
-                                            <td>{{ $invoice->due_date ?? 'N/A' }}</td>
                                             <td>
-                                                @if ($invoice->due_date && \Carbon\Carbon::parse($invoice->due_date)->lt(\Carbon\Carbon::today()))
-                                                    {{ \Carbon\Carbon::parse($invoice->due_date)->diffInDays(\Carbon\Carbon::today()) }}
-                                                    day(s)
+                                                @if ($invoice->customer?->due_date)
+                                                    {{ $invoice->created_at->copy()->addDays((int) $invoice->customer->due_date)->format('Y-m-d H:i:s') }}
                                                 @else
-                                                    0 day(s)
+                                                    N/A
                                                 @endif
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $overdueDays = 0;
+
+                                                    if ($invoice->customer?->due_date) {
+                                                        $calculatedDueDate = $invoice->created_at
+                                                            ->copy()
+                                                            ->addDays((int) $invoice->customer->due_date);
+
+                                                        if ($calculatedDueDate->lt(\Carbon\Carbon::today())) {
+                                                            $overdueDays = $calculatedDueDate->diffInDays(
+                                                                \Carbon\Carbon::today(),
+                                                            );
+                                                        }
+                                                    }
+                                                @endphp
+
+                                                {{ $overdueDays }} day(s)
                                             </td>
                                             <td>{{ $invoice->createdBy->name ?? 'N/A' }}</td>
                                             <td>{{ $invoice->created_at }}</td>

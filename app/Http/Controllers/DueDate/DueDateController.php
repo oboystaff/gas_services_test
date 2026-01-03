@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Invoice;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 
 class DueDateController extends Controller
@@ -39,8 +40,21 @@ class DueDateController extends Controller
                 $query->whereMonth('created_at', $request->month)
                     ->whereYear('created_at', $request->year ?? now()->year);
             })
-            ->whereNotNull('due_date')
-            ->whereDate('due_date', '<=', Carbon::today())
+            ->whereHas('customer', function ($q) {
+                $q->whereRaw(
+                    "DATE_ADD(invoices.created_at, INTERVAL customers.due_date DAY) <= ?",
+                    [now()]
+                );
+            })
+            ->whereNotExists(function ($sub) {
+                $sub->select(DB::raw(1))
+                    ->from('payments')
+                    ->whereColumn('payments.invoice_no', 'invoices.invoice_no')
+                    ->groupBy('payments.invoice_no')
+                    ->havingRaw(
+                        'SUM(payments.amount_paid + IFNULL(payments.withholding_tax_amount, 0)) >= invoices.amount'
+                    );
+            })
             ->orderBy('created_at', 'DESC')
             ->get();
 

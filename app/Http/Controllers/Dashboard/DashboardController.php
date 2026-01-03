@@ -210,8 +210,21 @@ class DashboardController extends Controller
             ->when(!empty($request->user()->branch_id), function ($query) use ($request) {
                 $query->where('branch_id', $request->user()->branch_id);
             })
-            ->whereNotNull('due_date')
-            ->whereDate('due_date', '<=', Carbon::today())
+            ->whereHas('customer', function ($q) {
+                $q->whereRaw(
+                    "DATE_ADD(invoices.created_at, INTERVAL customers.due_date DAY) <= ?",
+                    [now()]
+                );
+            })
+            ->whereNotExists(function ($sub) {
+                $sub->select(DB::raw(1))
+                    ->from('payments')
+                    ->whereColumn('payments.invoice_no', 'invoices.invoice_no')
+                    ->groupBy('payments.invoice_no')
+                    ->havingRaw(
+                        'SUM(payments.amount_paid + IFNULL(payments.withholding_tax_amount, 0)) >= invoices.amount'
+                    );
+            })
             ->count();
 
         $total = [

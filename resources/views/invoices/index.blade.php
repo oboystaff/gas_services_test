@@ -168,7 +168,13 @@
                                             <td>{{ $invoice->gasRequest->driverAssigned->name ?? 'N/A' }}</td>
                                             <td>{{ $invoice->gasRequest->driverAssigned->vehicle->vehicle_number ?? 'N/A' }}
                                             </td>
-                                            <td>{{ $invoice->due_date ?? 'N/A' }}</td>
+                                            <td>
+                                                @if ($invoice->customer?->due_date)
+                                                    {{ $invoice->created_at->copy()->addDays((int) $invoice->customer->due_date)->format('Y-m-d H:i:s') }}
+                                                @else
+                                                    N/A
+                                                @endif
+                                            </td>
                                             <td>{{ $invoice->createdBy->name ?? 'N/A' }}</td>
                                             <td>{{ $invoice->created_at }}</td>
                                             <td>
