@@ -57,6 +57,8 @@ Route::group(['prefix' => 'customer', 'middleware' => 'auth:sanctum'], function 
     Route::get('/show/{id}', [Customer\CustomerController::class, 'show']);
     Route::post('/create', [Customer\CustomerController::class, 'store']);
     Route::post('/update/{id}', [Customer\CustomerController::class, 'update']);
+    Route::get('/balance/{id}', [Customer\CustomerController::class, 'balance']);
+    Route::get('/request/{id}', [Customer\CustomerController::class, 'customerRequest']);
 });
 
 Route::group(['prefix' => 'gas-request', 'middleware' => 'auth:sanctum'], function () {

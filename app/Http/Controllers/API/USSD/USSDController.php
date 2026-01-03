@@ -184,8 +184,10 @@ class USSDController extends Controller
         $totalPayment = Payment::where('customer_id', $id)
             ->sum(DB::raw("
                 CASE
-                    WHEN payment_mode = 'momo' AND transaction_status = 'Success' THEN amount_paid
-                    WHEN payment_mode != 'momo' THEN amount_paid
+                    WHEN payment_mode = 'momo' AND transaction_status = 'Success'
+                        THEN amount_paid + IFNULL(withholding_tax_amount, 0)
+                    WHEN payment_mode != 'momo'
+                        THEN amount_paid + IFNULL(withholding_tax_amount, 0)
                     ELSE 0
                 END
             "));
