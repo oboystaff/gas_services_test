@@ -246,7 +246,9 @@ class USSDController extends Controller
 
         $payment = Payment::create($data);
 
-        dispatch(new SendPaymentSMS($payment));
+        if ($payment->transaction_status === 'Success') {
+            dispatch(new SendPaymentSMS($payment));
+        }
 
         return response()->json([
             'message' => 'Payment made successfully'
