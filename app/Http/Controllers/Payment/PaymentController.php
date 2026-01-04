@@ -74,12 +74,15 @@ class PaymentController extends Controller
 
         $payment = Payment::create($data);
 
-        $totalPayment = Payment::where('invoice_no', $data['invoice_no'])
-            ->selectRaw('SUM(COALESCE(amount_paid,0) + COALESCE(withholding_tax_amount,0)) as total')
-            ->value('total');
+        if (!empty($data['invoice_no'])) {
 
-        if ((float) $totalPayment >= (float) $data['amount']) {
-            Invoice::where('invoice_no',  $data['invoice_no'])->update(['due_date' => null]);
+            $totalPayment = Payment::where('invoice_no', $data['invoice_no'])
+                ->selectRaw('SUM(COALESCE(amount_paid,0) + COALESCE(withholding_tax_amount,0)) as total')
+                ->value('total');
+
+            if ((float) $totalPayment >= (float) $data['amount']) {
+                Invoice::where('invoice_no',  $data['invoice_no'])->update(['due_date' => null]);
+            }
         }
 
         dispatch(new SendPaymentSMS($payment));

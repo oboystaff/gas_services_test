@@ -9,7 +9,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Actions\SMS\SendSMS;
 use App\Models\Rate;
-use Termwind\Components\Raw;
+use App\Models\InvoiceNote;
+
 
 class SendInvoiceSMS implements ShouldQueue
 {
@@ -49,7 +50,15 @@ class SendInvoiceSMS implements ShouldQueue
             ")
             ->value('total');
 
-        $balance = $totalInvoices - $totalPayments;
+        $creditNotes = InvoiceNote::where('customer_id', $this->invoice->customer->customer_id)
+            ->where('note_type', 'credit')
+            ->sum('amount');
+
+        $debitNotes = InvoiceNote::where('customer_id', $this->invoice->customer->customer_id)
+            ->where('note_type', 'debit')
+            ->sum('amount');
+
+        $balance = $totalInvoices - $totalPayments - $creditNotes + $debitNotes;
 
         $msg = "Hello " . $this->invoice->customer->name . ", ";
         $msg .= "You have been invoiced an amount of GHC " . $this->invoice->amount . " for " . $this->invoice->gasRequest->kg . "kg gas supplied ";

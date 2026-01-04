@@ -18,6 +18,7 @@ use App\Jobs\GasRequest\SendGasRequestSMS;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Community;
+use App\Models\InvoiceNote;
 use Illuminate\Support\Facades\DB;
 use App\Jobs\Payment\SendPaymentSMS;
 
@@ -192,7 +193,15 @@ class USSDController extends Controller
                 END
             "));
 
-        $balance = $totalInvoice - $totalPayment;
+        $creditNotes = InvoiceNote::where('customer_id', $id)
+            ->where('note_type', 'credit')
+            ->sum('amount');
+
+        $debitNotes = InvoiceNote::where('customer_id', $id)
+            ->where('note_type', 'debit')
+            ->sum('amount');
+
+        $balance = $totalInvoice - $totalPayment - $creditNotes + $debitNotes;
 
         return response()->json([
             'message' => 'Customer balance',

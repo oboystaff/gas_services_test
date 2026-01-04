@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Community;
+use App\Models\InvoiceNote;
 use Illuminate\Http\Request;
 use App\Jobs\Customer\SendCustomerSMS;
 use App\Models\GasRequest;
@@ -115,6 +116,14 @@ class CustomerController extends Controller
                 END
             "));
 
+        $creditNotes = InvoiceNote::where('customer_id', $id)
+            ->where('note_type', 'credit')
+            ->sum('amount');
+
+        $debitNotes = InvoiceNote::where('customer_id', $id)
+            ->where('note_type', 'debit')
+            ->sum('amount');
+
         $customer = Customer::where('customer_id', $id)->first();
 
         if (empty($customer)) {
@@ -127,7 +136,7 @@ class CustomerController extends Controller
         $customer['community'] = isset($communityNames) ? $communityNames : 'N/A';
         unset($customer['community_id']);
 
-        $balance = $totalInvoice - $totalPayment;
+        $balance = $totalInvoice - $totalPayment - $creditNotes + $debitNotes;
 
         return response()->json([
             'message' => 'Customer balance',
