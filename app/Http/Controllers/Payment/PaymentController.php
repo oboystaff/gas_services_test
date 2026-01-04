@@ -36,6 +36,13 @@ class PaymentController extends Controller
                 $query->whereMonth('created_at', Carbon::now()->month)
                     ->whereYear('created_at', Carbon::now()->year);
             })
+            ->where(function ($q) {
+                $q->where(function ($q1) {
+                    $q1->where('payment_mode', 'momo')
+                        ->where('transaction_status', 'Success');
+                })
+                    ->orWhere('payment_mode', '!=', 'momo');
+            })
             ->get();
 
         $amount = $payments->sum("amount");

@@ -42,6 +42,13 @@ class PaymentReportController extends Controller
                         ->when($request->filled('payment_mode'), function ($query) use ($request) {
                             $query->where('payment_mode', $request->payment_mode);
                         })
+                        ->where(function ($q) {
+                            $q->where(function ($q1) {
+                                $q1->where('payment_mode', 'momo')
+                                    ->where('transaction_status', 'Success');
+                            })
+                                ->orWhere('payment_mode', '!=', 'momo');
+                        })
                         ->get();
 
                     return datatables()->of($data)

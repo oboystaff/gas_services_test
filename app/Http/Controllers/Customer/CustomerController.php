@@ -190,7 +190,16 @@ class CustomerController extends Controller
         $pageTitle = "Customer Statement Page";
 
         $invoices = Invoice::where('customer_id', $customer->customer_id)->get();
-        $payments = Payment::where('customer_id', $customer->customer_id)->get();
+        $payments = Payment::where('customer_id', $customer->customer_id)
+            ->where(function ($q) {
+                $q->where(function ($q1) {
+                    $q1->where('payment_mode', 'momo')
+                        ->where('transaction_status', 'Success');
+                })
+                    ->orWhere('payment_mode', '!=', 'momo');
+            })
+            ->get();
+
         $notes = InvoiceNote::where('customer_id', $customer->customer_id)->get();
 
         $statement = collect();
@@ -269,7 +278,16 @@ class CustomerController extends Controller
         $pageTitle = "Customer Statement Page";
 
         $invoices = Invoice::where('customer_id', $customer->customer_id)->get();
-        $payments = Payment::where('customer_id', $customer->customer_id)->get();
+        $payments = Payment::where('customer_id', $customer->customer_id)
+            ->where(function ($q) {
+                $q->where(function ($q1) {
+                    $q1->where('payment_mode', 'momo')
+                        ->where('transaction_status', 'Success');
+                })
+                    ->orWhere('payment_mode', '!=', 'momo');
+            })
+            ->get();
+
         $notes = InvoiceNote::where('customer_id', $customer->customer_id)->get();
 
         $statement = collect();
