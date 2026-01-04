@@ -8,6 +8,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Actions\SMS\SendSMS;
+use App\Models\InvoiceNote;
 
 
 class SendPaymentSMS implements ShouldQueue
@@ -50,7 +51,15 @@ class SendPaymentSMS implements ShouldQueue
             ")
             ->value('total');
 
-        $balance = $totalInvoices - $totalPayments;
+        $creditNotes = InvoiceNote::where('customer_id', $this->payment->customer->customer_id)
+            ->where('note_type', 'credit')
+            ->sum('amount');
+
+        $debitNotes = InvoiceNote::where('customer_id', $this->payment->customer->customer_id)
+            ->where('note_type', 'debit')
+            ->sum('amount');
+
+        $balance = $totalInvoices - $totalPayments -  $creditNotes + $debitNotes;
 
         $msg = "Hello " . $customer->name . ", ";
         $msg .= "Manbah Gas has credited your account(" . $customer->customer_id . ") with GHC " . number_format($this->payment->amount_paid, 2) . ". ";
