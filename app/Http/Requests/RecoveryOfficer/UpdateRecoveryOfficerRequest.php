@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\RecoveryOfficer;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateUserRequest extends FormRequest
+class UpdateRecoveryOfficerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,12 +23,7 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'email' => ['required', 'string'],
-            'phone' => ['required', 'string'],
-            'password' => ['nullable', 'confirmed'],
-            'branch_id' => ['nullable', 'string', 'exists:branches,id'],
-            'role' => ['required', 'string'],
-            'status' => ['nullable', 'string', 'in:Active,InActive']
+            'phone' => ['required', 'string']
         ];
     }
 }

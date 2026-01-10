@@ -174,6 +174,29 @@
                                         @enderror
                                     </div>
                                 </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group mt-3">
+                                        <label id="due_date">Recovery Officer</label>
+                                        <select
+                                            class="form-control default-select @error('recovery_officer_id') is-invalid @enderror"
+                                            name="recovery_officer_id">
+                                            <option disabled selected>Select Recovery Officer</option>
+                                            @foreach ($recoveryOfficers as $recoveryOfficer)
+                                                <option value="{{ $recoveryOfficer->id }}"
+                                                    {{ old('recovery_officer_id', $customer->recovery_officer_id ?? '') == $recoveryOfficer->id ? 'selected' : '' }}>
+                                                    {{ $recoveryOfficer->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+
+                                        @error('recovery_officer_id')
+                                            <span class="invalid-feedback" role="alert">
+                                                {{ $message }}
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="d-flex justify-content-end" style="margin-top:20px;">

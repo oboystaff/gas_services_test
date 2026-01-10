@@ -83,7 +83,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center" style="margin-bottom: 30px;">
-                            <h5 class="card-title">View Receivables</h5>
+                            <h5 class="card-title">View Recovery Officer Debt Details</h5>
 
                             <a href="{{ route('dashboard.operational') }}" type="button" class="btn btn-primary">
                                 <i class="fa fa-plus" aria-hidden="true"></i> Back
@@ -95,20 +95,24 @@
                                 <thead>
                                     <tr>
                                         <th>S/N</th>
-                                        <th>Customer ID</th>
-                                        <th>Customer Name</th>
-                                        <th>Officer Name</th>
-                                        <th>Balance</th>
+                                        <th>Invoice No</th>
+                                        <th>Customer</th>
+                                        <th>Invoice Amount</th>
+                                        <th>Outstanding</th>
+                                        <th>Invoice Date</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($debtors as $index => $debtor)
+                                    @foreach ($invoices as $index => $invoice)
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
-                                            <td>{{ $debtor->customer_id }}</td>
-                                            <td>{{ $debtor->name ?? 'N/A' }}</td>
-                                            <td>{{ $debtor->officer_name ?? 'N/A' }}</td>
-                                            <td>{{ number_format($debtor->balance, 2) }}</td>
+                                            <td>{{ $invoice->invoice_no }}</td>
+                                            <td>{{ $invoice->customer_name }}</td>
+                                            <td>{{ number_format($invoice->amount, 2) }}</td>
+                                            <td class="text-danger">
+                                                {{ number_format($invoice->outstanding_balance, 2) }}
+                                            </td>
+                                            <td>{{ $invoice->created_at }}</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -116,7 +120,8 @@
                                     <tr>
                                         <th colspan="2"></th>
                                         <th>Total:</th>
-                                        <th>{{ $total['receivables'] }}</th>
+                                        <th>{{ $total['totalAmount'] }}</th>
+                                        <th colspan="2">{{ $total['totalBalance'] }}</th>
                                     </tr>
                                 </tfoot>
                             </table>

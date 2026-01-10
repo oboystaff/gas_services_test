@@ -21,6 +21,7 @@ use App\Http\Controllers\Invoice;
 use App\Http\Controllers\Payment;
 use App\Http\Controllers\Notification;
 use App\Http\Controllers\DueDate;
+use App\Http\Controllers\RecoveryOfficer;
 
 
 
@@ -42,14 +43,21 @@ Route::get('/', function () {
 
 Route::get('/', [Auth\LoginController::class, 'index'])->name('auth.index');
 Route::post('/login', [Auth\LoginController::class, 'login'])->name('auth.login');
+Route::get('/send/otp', [Auth\LoginController::class, 'sendOTP'])->name('auth.sendOTP');
+Route::post('/send/otp', [Auth\LoginController::class, 'sendUserOTP'])->name('auth.sendUserOTP');
+Route::get('/change/password', [Auth\LoginController::class, 'changePassword'])->name('auth.changePassword');
+Route::post('/change/password', [Auth\LoginController::class, 'changerUserPassword'])->name('auth.changeUserPassword');
 Route::get('/logout', [Auth\LoginController::class, 'logout'])->name('auth.logout');
 Route::get('/customer/invoice/{invoice}', [Invoice\InvoiceController::class, 'show'])->name('customer_invoice.show');
 Route::get('/customer/receipt/{payment}', [Payment\PaymentController::class, 'generateReceipt'])->name('customer_payment.receipt');
+
 
 Route::group(['prefix' => 'dashboard', 'middleware' => 'auth:sanctum'], function () {
     Route::get('/operational', [Dashboard\DashboardController::class, 'operational'])->name('dashboard.operational');
     Route::get('/sale/summary', [Dashboard\DashboardController::class, 'saleSummary'])->name('dashboard.saleSummary');
     Route::get('/receivables', [Dashboard\DashboardController::class, 'debtors'])->name('dashboard.debtors');
+    Route::get('/recovery/officer/performance', [Dashboard\DashboardController::class, 'recoveryOfficerPerformance'])->name('dashboard.recoveryPerformance');
+    Route::get('/recovery-officers/{recoveryOfficer}', [Dashboard\DashboardController::class, 'recoveryOfficerDebtDetails'])->name('recovery-officers.debt-details');
 });
 
 Route::group(['prefix' => 'users', 'middleware' => 'auth:sanctum'], function () {
@@ -237,4 +245,13 @@ Route::group(['prefix' => 'due-date', 'middleware' => 'auth:sanctum'], function 
     Route::get('/show/{dueDate}', [DueDate\DueDateController::class, 'show'])->name('due-dates.show');
     Route::get('/edit/{dueDate}', [DueDate\DueDateController::class, 'edit'])->name('due-dates.edit');
     Route::post('/update/{dueDate}', [DueDate\DueDateController::class, 'update'])->name('due-dates.update');
+});
+
+Route::group(['prefix' => 'recovery-officer', 'middleware' => 'auth:sanctum'], function () {
+    Route::get('/', [RecoveryOfficer\RecoveryOfficerController::class, 'index'])->name('recovery-officers.index');
+    Route::get('/create', [RecoveryOfficer\RecoveryOfficerController::class, 'create'])->name('recovery-officers.create');
+    Route::post('/create', [RecoveryOfficer\RecoveryOfficerController::class, 'store'])->name('recovery-officers.store');
+    Route::get('/show/{recoveryOfficer}', [RecoveryOfficer\RecoveryOfficerController::class, 'show'])->name('recovery-officers.show');
+    Route::get('/edit/{recoveryOfficer}', [RecoveryOfficer\RecoveryOfficerController::class, 'edit'])->name('recovery-officers.edit');
+    Route::post('/update/{recoveryOfficer}', [RecoveryOfficer\RecoveryOfficerController::class, 'update'])->name('recovery-officers.update');
 });

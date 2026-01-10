@@ -83,7 +83,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center" style="margin-bottom: 30px;">
-                            <h5 class="card-title">View Receivables</h5>
+                            <h5 class="card-title">View Recovery Officer Performance</h5>
 
                             <a href="{{ route('dashboard.operational') }}" type="button" class="btn btn-primary">
                                 <i class="fa fa-plus" aria-hidden="true"></i> Back
@@ -95,28 +95,37 @@
                                 <thead>
                                     <tr>
                                         <th>S/N</th>
-                                        <th>Customer ID</th>
-                                        <th>Customer Name</th>
-                                        <th>Officer Name</th>
-                                        <th>Balance</th>
+                                        <th>Recovery Officer Name</th>
+                                        <th>Total Debt</th>
+                                        <th>Percentage (%)</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($debtors as $index => $debtor)
+                                    @foreach ($results as $index => $result)
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
-                                            <td>{{ $debtor->customer_id }}</td>
-                                            <td>{{ $debtor->name ?? 'N/A' }}</td>
-                                            <td>{{ $debtor->officer_name ?? 'N/A' }}</td>
-                                            <td>{{ number_format($debtor->balance, 2) }}</td>
+                                            <td>{{ $result->name }}</td>
+                                            <td>{{ number_format($result->total_debt, 2) }}</td>
+                                            <td>{{ $result->percentage }}</td>
+                                            <td>
+                                                @if ($result->total_debt > 0)
+                                                    <a href="{{ route('recovery-officers.debt-details', $result->id) }}"
+                                                        class="btn btn-sm btn-info">
+                                                        View Details
+                                                    </a>
+                                                @else
+                                                    <span class="text-muted">No Debt</span>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th colspan="2"></th>
+                                        <th colspan="1"></th>
                                         <th>Total:</th>
-                                        <th>{{ $total['receivables'] }}</th>
+                                        <th colspan="3">{{ number_format($grandTotalDebt, 2) }}</th>
                                     </tr>
                                 </tfoot>
                             </table>

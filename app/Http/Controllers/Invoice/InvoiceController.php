@@ -44,17 +44,41 @@ class InvoiceController extends Controller
                     ->whereYear('created_at', Carbon::now()->year);
             })
             ->when($request->display == "receivables", function ($query) {
-                $query->whereRaw('amount > IFNULL((SELECT SUM(amount_paid) FROM payments WHERE payments.invoice_no = invoices.invoice_no), 0)');
+                $query->whereRaw('
+                    amount > IFNULL((
+                        SELECT SUM(
+                            CASE
+                                WHEN payment_mode = "momo" AND transaction_status = "Success"
+                                    THEN COALESCE(amount_paid, 0) + COALESCE(withholding_tax_amount, 0)
+                                WHEN payment_mode != "momo"
+                                    THEN COALESCE(amount_paid, 0) + COALESCE(withholding_tax_amount, 0)
+                                ELSE 0
+                            END
+                        )
+                        FROM payments 
+                        WHERE payments.invoice_no = invoices.invoice_no
+                    ), 0)
+                ');
             })
             ->when($request->month, function ($query) use ($request) {
                 $query->whereMonth('created_at', $request->month)
                     ->whereYear('created_at', $request->year ?? now()->year);
             })
-            // ->when(!$request->month, function ($query) {
-            //     $query->whereMonth('created_at', now()->month)
-            //         ->whereYear('created_at', now()->year);
-            // })
-            ->orderBy('created_at', 'DESC')
+            ->whereRaw('
+                amount > IFNULL((
+                    SELECT SUM(
+                        CASE
+                            WHEN payment_mode = "momo" AND transaction_status = "Success"
+                                THEN COALESCE(amount_paid, 0) + COALESCE(withholding_tax_amount, 0)
+                            WHEN payment_mode != "momo"
+                                THEN COALESCE(amount_paid, 0) + COALESCE(withholding_tax_amount, 0)
+                            ELSE 0
+                        END
+                    )
+                    FROM payments 
+                    WHERE payments.invoice_no = invoices.invoice_no
+                ), 0)
+            ')
             ->get();
 
         if ($request->display == "receivables") {
@@ -77,7 +101,9 @@ class InvoiceController extends Controller
                             $q->where('payment_mode', '<>', 'momo');
                         });
                 })
-                ->sum('amount_paid');
+                ->sum(DB::raw('
+                    COALESCE(amount_paid, 0) + COALESCE(withholding_tax_amount, 0)
+                '));
 
             $amount = $totalInvoiceAmount - $totalPayments;
         } else {

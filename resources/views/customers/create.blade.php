@@ -131,6 +131,30 @@
                                 </div>
                             </div>
 
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mt-3">
+                                        <label id="due_date">Recovery Officer</label>
+                                        <select
+                                            class="form-control default-select @error('recovery_officer_id') is-invalid @enderror"
+                                            name="recovery_officer_id">
+                                            <option disabled selected>Select Recovery Officer</option>
+                                            @foreach ($recoveryOfficers as $recoveryOfficer)
+                                                <option value="{{ $recoveryOfficer->id }}">
+                                                    {{ $recoveryOfficer->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+
+                                        @error('recovery_officer_id')
+                                            <span class="invalid-feedback" role="alert">
+                                                {{ $message }}
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="d-flex justify-content-end" style="margin-top:20px;">
                                 <button type="submit" class="btn btn-primary" style="width:150px">
                                     <i class="fa fa-paper-plane" aria-hidden="true"></i> Submit

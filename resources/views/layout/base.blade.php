@@ -294,6 +294,15 @@
                                         </li>
                                     @endcan
 
+                                    @can('vehicles.view')
+                                        <li class="sidebar-item">
+                                            <a href="{{ route('recovery-officers.index') }}" class="sidebar-link"><i
+                                                    class="mdi mdi-emoticon"></i><span class="hide-menu"> View Recovery
+                                                    Officers
+                                                </span></a>
+                                        </li>
+                                    @endcan
+
                                     @can('roles.view')
                                         <li class="sidebar-item">
                                             <a href="{{ route('roles.index') }}" class="sidebar-link"><i

@@ -17,6 +17,8 @@ use App\Models\Rate;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\InvoiceNote;
+use App\Models\RecoveryOfficer;
+use App\Models\RecoveryOfficerAssignment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -60,7 +62,9 @@ class CustomerController extends Controller
             })
             ->get();
 
-        return view('customers.create', compact('communities', 'branches', 'pageTitle'));
+        $recoveryOfficers = RecoveryOfficer::orderBy('name', 'ASC')->get();
+
+        return view('customers.create', compact('communities', 'branches', 'recoveryOfficers', 'pageTitle'));
     }
 
     public function store(CreateCustomerRequest $request)
@@ -83,6 +87,14 @@ class CustomerController extends Controller
             ];
 
             User::create($userData);
+
+            $assignmentData = [
+                'customer_id' => $customer->customer_id,
+                'recovery_officer_id' => $data['recovery_officer_id'],
+                'created_by' => $request->user()->id
+            ];
+
+            RecoveryOfficerAssignment::create($assignmentData);
         }
 
         dispatch(new SendCustomerSMS($customer));
@@ -113,7 +125,12 @@ class CustomerController extends Controller
             })
             ->get();
 
-        return view('customers.edit', compact('customer', 'communities', 'branches', 'pageTitle'));
+        $customer->recovery_officer_id = RecoveryOfficerAssignment::where('customer_id', $customer->customer_id)
+            ->value('recovery_officer_id');
+
+        $recoveryOfficers = RecoveryOfficer::orderBy('name', 'ASC')->get();
+
+        return view('customers.edit', compact('customer', 'communities', 'branches', 'recoveryOfficers', 'pageTitle'));
     }
 
     public function update(UpdateCustomerRequest $request, Customer $customer)
@@ -122,6 +139,16 @@ class CustomerController extends Controller
         $data['threshold'] = $request->has('threshold') ? $request->input('threshold') : 'N';
 
         $customer->update($data);
+
+        RecoveryOfficerAssignment::updateOrCreate(
+            [
+                'customer_id' => $customer->customer_id,
+            ],
+            [
+                'recovery_officer_id' => $data['recovery_officer_id'],
+                'created_by' => $request->user()->id,
+            ]
+        );
 
         return redirect()->route('customers.index')->with('status', 'Customer updated successfully.');
     }

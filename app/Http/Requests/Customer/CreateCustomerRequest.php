@@ -28,7 +28,8 @@ class CreateCustomerRequest extends FormRequest
             'community_id' => ['required', 'array'],
             'community_id.*' => ['required', 'exists:communities,id'],
             'branch_id' => ['required', 'string', 'exists:branches,id'],
-            'due_date' => ['nullable', 'numeric']
+            'due_date' => ['nullable', 'numeric'],
+            'recovery_officer_id' => ['required', 'string', 'exists:recovery_officers,id']
         ];
     }
 }

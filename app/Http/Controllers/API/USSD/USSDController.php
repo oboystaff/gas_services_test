@@ -21,7 +21,7 @@ use App\Models\Community;
 use App\Models\InvoiceNote;
 use Illuminate\Support\Facades\DB;
 use App\Jobs\Payment\SendPaymentSMS;
-
+use Illuminate\Support\Facades\Log;
 
 
 class USSDController extends Controller
@@ -243,6 +243,8 @@ class USSDController extends Controller
         $data['outstanding'] = 0;
         $data['branch_id'] = $customer->branch_id ?? '';
         $data['created_by'] = $request->user()->id ?? '';
+
+        //Log::info($data);
 
         $payment = Payment::create($data);
 

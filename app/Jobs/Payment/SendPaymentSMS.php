@@ -59,7 +59,7 @@ class SendPaymentSMS implements ShouldQueue
             ->where('note_type', 'debit')
             ->sum('amount');
 
-        $balance = $totalInvoices - $totalPayments -  $creditNotes + $debitNotes;
+        $balance = $totalInvoices - $totalPayments - $creditNotes + $debitNotes;
 
         $msg = "Hello " . $customer->name . ", ";
         $msg .= "Manbah Gas has credited your account(" . $customer->customer_id . ") with GHC " . number_format($this->payment->amount_paid, 2) . ". ";

@@ -22,39 +22,45 @@
                         <strong>{{ session('status') }}</strong>
                     </div>
                 @endif
-                <h2 class="text-center">Login Now</h2>
-                <form class="login-form" method="POST" action="{{ route('auth.login') }}">
+                <h2 class="text-center">Reset Your Account Password</h2>
+                <form class="login-form" method="POST" action="{{ route('auth.changeUserPassword') }}">
                     @csrf
                     <div class="form-group">
-                        <label><b>Phone Number</b></label>
-                        <input type="text" name="username"
-                            class="form-control @error('username') is-invalid @enderror" placeholder="Phone Number">
-                        @error('username')
+                        <label><b>New OTP</b></label>
+                        <input type="text" name="code" class="form-control @error('code') is-invalid @enderror"
+                            placeholder="New OTP">
+
+                        @error('code')
                             <span class="invalid-feedback" role="alert">{{ $message }}</span>
                         @enderror
                     </div>
 
                     <div class="form-group">
-                        <label><b>Password</b></label>
+                        <label><b>New Password</b></label>
                         <input type="password" name="password"
                             class="form-control @error('password') is-invalid @enderror" placeholder="Password">
+
                         @error('password')
                             <span class="invalid-feedback" role="alert">{{ $message }}</span>
                         @enderror
                     </div>
 
-                    <div class="form-check">
-                        <label class="form-check-label">
-                            <input type="checkbox" class="form-check-input">
-                            <small>Remember Me</small>
-                        </label>
+                    <div class="form-group">
+                        <label><b>Confirm Password</b></label>
+                        <input type="password" name="password_confirmation"
+                            class="form-control @error('password_confirmation') is-invalid @enderror"
+                            placeholder="Password Confirmation">
+
+                        @error('password_confirmation')
+                            <span class="invalid-feedback" role="alert">{{ $message }}</span>
+                        @enderror
                     </div>
 
-                    <button type="submit" class="btn btn-login btn-block">Sign In</button>
+                    <button type="submit" class="btn btn-login btn-block">Reset Password</button>
                     <div class="mt-2">
-                        <p>Forget Password? <a class="text-primary" href="{{ route('auth.sendOTP') }}"
-                                style="color: #f37429;">Reset
-                                Password Here </a></p>
+                        <p>No OTP Received? <a class="text-primary" href="{{ route('auth.sendOTP') }}"
+                                style="color: #f37429;">Resend
+                                OTP </a></p>
                     </div>
                 </form>
             </div>

@@ -156,6 +156,22 @@
                     </div>
                 </a>
             </div>
+
+            <!-- Total Customers -->
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <a href="{{ route('dashboard.recoveryPerformance', ['display' => 'all']) }}"
+                    style="text-decoration: none;">
+                    <div class="stats-card">
+                        <div class="stats-card-body">
+                            <div class="stats-icon cyan">
+                                <i class="mdi mdi-account text-white"></i>
+                            </div>
+                            <div class="stats-label">Recovery Officer Performance</div>
+                            <h2 class="stats-value">{{ $total['totalRecoveryOfficers'] }}</h2>
+                        </div>
+                    </div>
+                </a>
+            </div>
         </div>
 
         <!-- Charts Section -->

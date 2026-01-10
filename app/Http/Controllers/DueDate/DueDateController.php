@@ -27,14 +27,33 @@ class DueDateController extends Controller
                 $query->whereDate('created_at', Carbon::today());
             })
             ->when($request->display == "weekly", function ($query) {
-                $query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+                $query->whereBetween('created_at', [
+                    Carbon::now()->startOfWeek(),
+                    Carbon::now()->endOfWeek()
+                ]);
             })
             ->when($request->display == "monthly", function ($query) {
                 $query->whereMonth('created_at', Carbon::now()->month)
                     ->whereYear('created_at', Carbon::now()->year);
             })
             ->when($request->display == "receivables", function ($query) {
-                $query->whereRaw('amount > IFNULL((SELECT SUM(amount_paid) FROM payments WHERE payments.invoice_no = invoices.invoice_no), 0)');
+                $query->whereRaw("
+                    invoices.amount >
+                    IFNULL((
+                        SELECT SUM(
+                            CASE
+                                WHEN payment_mode = 'momo'
+                                    AND transaction_status = 'Success'
+                                    THEN amount_paid + IFNULL(withholding_tax_amount, 0)
+                                WHEN payment_mode != 'momo'
+                                    THEN amount_paid + IFNULL(withholding_tax_amount, 0)
+                                ELSE 0
+                            END
+                        )
+                        FROM payments
+                        WHERE payments.invoice_no = invoices.invoice_no
+                    ), 0)
+                ");
             })
             ->when($request->month, function ($query) use ($request) {
                 $query->whereMonth('created_at', $request->month)
@@ -51,9 +70,18 @@ class DueDateController extends Controller
                     ->from('payments')
                     ->whereColumn('payments.invoice_no', 'invoices.invoice_no')
                     ->groupBy('payments.invoice_no')
-                    ->havingRaw(
-                        'SUM(payments.amount_paid + IFNULL(payments.withholding_tax_amount, 0)) >= invoices.amount'
-                    );
+                    ->havingRaw("
+                    SUM(
+                        CASE
+                            WHEN payments.payment_mode = 'momo'
+                                AND payments.transaction_status = 'Success'
+                                THEN payments.amount_paid + IFNULL(payments.withholding_tax_amount, 0)
+                            WHEN payments.payment_mode != 'momo'
+                                THEN payments.amount_paid + IFNULL(payments.withholding_tax_amount, 0)
+                            ELSE 0
+                        END
+                    ) >= invoices.amount
+                ");
             })
             ->orderBy('created_at', 'DESC')
             ->get();

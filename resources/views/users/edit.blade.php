@@ -153,6 +153,25 @@
                                         </span>
                                     @enderror
                                 </div>
+
+                                <div class="col-md-6 mt-3">
+                                    <label class="form-label">User Status</label>
+                                    <select class="form-control default-select @error('status') is-invalid @enderror"
+                                        name="status">
+                                        <option disabled selected>Select User Status</option>
+                                        <option value="Active" {{ $user->status == 'Active' ? 'selected' : '' }}>Active
+                                            (Activate)
+                                        </option>
+                                        <option value="InActive" {{ $user->status == 'InActive' ? 'selected' : '' }}>In
+                                            Active (Deactivate)</option>
+                                    </select>
+
+                                    @error('status')
+                                        <span class="invalid-feedback" role="alert">
+                                            {{ $message }}
+                                        </span>
+                                    @enderror
+                                </div>
                             </div>
 
                             <div class="d-flex justify-content-end" style="margin-top:20px;">
