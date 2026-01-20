@@ -207,12 +207,32 @@ class DashboardController extends Controller
                 '=',
                 'pay.customer_id'
             )
+            ->leftJoinSub(
+                DB::table('invoice_notes')
+                    ->select(
+                        'customer_id',
+                        DB::raw("
+                            SUM(
+                                CASE
+                                    WHEN note_type = 'debit' THEN amount
+                                    WHEN note_type = 'credit' THEN -amount
+                                    ELSE 0
+                                END
+                            ) as net_notes_adjustment
+                        ")
+                    )
+                    ->groupBy('customer_id'),
+                'notes',
+                'customers.customer_id',
+                '=',
+                'notes.customer_id'
+            )
             ->select(
                 'customers.customer_id',
                 'customers.name',
-                DB::raw('(inv.total_invoiced - COALESCE(pay.total_paid,0)) as balance')
+                DB::raw('(inv.total_invoiced - COALESCE(pay.total_paid,0) + COALESCE(notes.net_notes_adjustment,0)) as balance')
             )
-            ->whereRaw('(inv.total_invoiced - COALESCE(pay.total_paid,0)) > 0')
+            ->whereRaw('(inv.total_invoiced - COALESCE(pay.total_paid,0) + COALESCE(notes.net_notes_adjustment,0)) > 0')
             ->orderByDesc('balance')
             ->limit(10)
             ->get();
@@ -222,7 +242,7 @@ class DashboardController extends Controller
                 DB::table('invoices')
                     ->select(
                         'customer_id',
-                        DB::raw('SUM(amount) as total_invoiced')
+                        DB::raw('ROUND(SUM(amount), 2) as total_invoiced')
                     )
                     ->groupBy('customer_id'),
                 'inv',
@@ -235,17 +255,17 @@ class DashboardController extends Controller
                     ->select(
                         'customer_id',
                         DB::raw("
-                            SUM(
-                                CASE
-                                    WHEN payment_mode = 'momo'
-                                        AND transaction_status = 'Success'
-                                        THEN amount_paid + IFNULL(withholding_tax_amount, 0)
-                                    WHEN payment_mode != 'momo'
-                                        THEN amount_paid + IFNULL(withholding_tax_amount, 0)
-                                    ELSE 0
-                                END
-                            ) as total_paid
-                        ")
+                    ROUND(SUM(
+                        CASE
+                            WHEN payment_mode = 'momo'
+                                AND transaction_status = 'Success'
+                                THEN amount_paid + IFNULL(withholding_tax_amount, 0)
+                            WHEN payment_mode != 'momo'
+                                THEN amount_paid + IFNULL(withholding_tax_amount, 0)
+                            ELSE 0
+                        END
+                    ), 2) as total_paid
+                ")
                     )
                     ->groupBy('customer_id'),
                 'pay',
@@ -253,8 +273,28 @@ class DashboardController extends Controller
                 '=',
                 'pay.customer_id'
             )
-            ->whereRaw('(inv.total_invoiced - COALESCE(pay.total_paid, 0)) > 0')
-            ->selectRaw('SUM(inv.total_invoiced - COALESCE(pay.total_paid, 0)) as receivables')
+            ->leftJoinSub(
+                DB::table('invoice_notes')
+                    ->select(
+                        'customer_id',
+                        DB::raw("
+                    ROUND(SUM(
+                        CASE
+                            WHEN note_type = 'debit' THEN amount
+                            WHEN note_type = 'credit' THEN -amount
+                            ELSE 0
+                        END
+                    ), 2) as net_notes_adjustment
+                ")
+                    )
+                    ->groupBy('customer_id'),
+                'notes',
+                'customers.customer_id',
+                '=',
+                'notes.customer_id'
+            )
+            ->whereRaw('ROUND(inv.total_invoiced - COALESCE(pay.total_paid, 0) + COALESCE(notes.net_notes_adjustment, 0), 2) > 0')
+            ->selectRaw('ROUND(SUM(inv.total_invoiced - COALESCE(pay.total_paid, 0) + COALESCE(notes.net_notes_adjustment, 0)), 2) as receivables')
             ->value('receivables');
 
         $totalDueDates = Invoice::orderBy('created_at', 'DESC')
@@ -332,13 +372,10 @@ class DashboardController extends Controller
     {
         $pageTitle = "Receivables Page";
 
-        $debtors = DB::table('customers')
+        $baseQuery = DB::table('customers')
             ->joinSub(
                 DB::table('invoices')
-                    ->select(
-                        'customer_id',
-                        DB::raw('SUM(amount) as total_invoiced')
-                    )
+                    ->select('customer_id', DB::raw('ROUND(SUM(amount), 2) as total_invoiced'))
                     ->groupBy('customer_id'),
                 'inv',
                 'customers.customer_id',
@@ -349,18 +386,15 @@ class DashboardController extends Controller
                 DB::table('payments')
                     ->select(
                         'customer_id',
-                        DB::raw("
-                            SUM(
-                                CASE
-                                    WHEN payment_mode = 'momo'
-                                        AND transaction_status = 'Success'
-                                        THEN amount_paid + IFNULL(withholding_tax_amount, 0)
-                                    WHEN payment_mode != 'momo'
-                                        THEN amount_paid + IFNULL(withholding_tax_amount, 0)
-                                    ELSE 0
-                                END
-                            ) as total_paid
-                        ")
+                        DB::raw("ROUND(SUM(
+                    CASE
+                        WHEN payment_mode = 'momo' AND transaction_status = 'Success'
+                            THEN amount_paid + IFNULL(withholding_tax_amount, 0)
+                        WHEN payment_mode != 'momo'
+                            THEN amount_paid + IFNULL(withholding_tax_amount, 0)
+                        ELSE 0
+                    END
+                ), 2) as total_paid")
                     )
                     ->groupBy('customer_id'),
                 'pay',
@@ -368,16 +402,42 @@ class DashboardController extends Controller
                 '=',
                 'pay.customer_id'
             )
-            ->leftJoin('recovery_officer_assignments as roa', 'roa.customer_id', '=', 'customers.customer_id')
-            ->leftJoin('recovery_officers as ro', 'ro.id', '=', 'roa.recovery_officer_id')
+            ->leftJoinSub(
+                DB::table('invoice_notes')
+                    ->select(
+                        'customer_id',
+                        DB::raw("ROUND(SUM(
+                    CASE
+                        WHEN note_type = 'debit' THEN amount
+                        WHEN note_type = 'credit' THEN -amount
+                        ELSE 0
+                    END
+                ), 2) as net_notes_adjustment")
+                    )
+                    ->groupBy('customer_id'),
+                'notes',
+                'customers.customer_id',
+                '=',
+                'notes.customer_id'
+            )
             ->select(
                 'customers.customer_id',
                 'customers.name',
-                DB::raw('(inv.total_invoiced - COALESCE(pay.total_paid, 0)) as balance'),
+                DB::raw('ROUND(inv.total_invoiced - COALESCE(pay.total_paid, 0) + COALESCE(notes.net_notes_adjustment, 0), 2) as balance')
+            );
+
+        $debtors = DB::table(DB::raw("({$baseQuery->toSql()}) as debtor_base"))
+            ->mergeBindings($baseQuery)
+            ->leftJoin('recovery_officer_assignments as roa', 'roa.customer_id', '=', 'debtor_base.customer_id')
+            ->leftJoin('recovery_officers as ro', 'ro.id', '=', 'roa.recovery_officer_id')
+            ->select(
+                'debtor_base.customer_id',
+                'debtor_base.name',
+                'debtor_base.balance',
                 DB::raw('COALESCE(ro.name, "N/A") as officer_name')
             )
-            ->whereRaw('(inv.total_invoiced - COALESCE(pay.total_paid, 0)) > 0')
-            ->orderByDesc('balance')
+            ->where('debtor_base.balance', '>', 0)
+            ->orderByDesc('debtor_base.balance')
             ->get();
 
         $total = ['receivables' => isset($debtors) ? number_format($debtors->sum('balance'), 2) : '0.00'];

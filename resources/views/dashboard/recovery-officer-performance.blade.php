@@ -4,66 +4,6 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/extra-libs/multicheck/multicheck.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css') }}" />
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
-
-    <style>
-        th,
-        td {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        table.dataTable {
-            table-layout: auto;
-            width: 100%;
-        }
-
-        .dataTables_wrapper {
-            overflow-x: auto;
-            position: relative;
-        }
-
-        .dropdown-menu {
-            position: absolute !important;
-            z-index: 1050 !important;
-            white-space: nowrap;
-            overflow: visible;
-            min-width: max-content;
-            max-width: none;
-        }
-
-        .dropdown {
-            position: static !important;
-        }
-
-        .dataTables_wrapper .dropdown-menu {
-            transform: translate3d(0, 0, 0);
-        }
-
-        .dropdown-menu.show.adjusted {
-            position: fixed !important;
-        }
-
-        .dropdown-menu {
-            position: absolute !important;
-            z-index: 1050 !important;
-            white-space: nowrap;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-            word-break: break-word;
-            min-width: 200px;
-            max-width: 300px;
-            width: auto;
-        }
-
-        .dropdown {
-            position: static !important;
-        }
-
-        .dataTables_wrapper .dropdown-menu {
-            transform: translate3d(0, 0, 0);
-        }
-    </style>
 @endsection
 
 @section('page-content')

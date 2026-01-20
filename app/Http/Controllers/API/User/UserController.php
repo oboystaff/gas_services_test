@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\User\CreateUserRequest;
+use App\Http\Requests\API\User\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -58,5 +59,28 @@ class UserController extends Controller
         ]);
     }
 
-    public function update() {}
+    public function update(UpdateUserRequest $request, $id)
+    {
+        $user = User::query()->where('id', $id)->first();
+
+        if (empty($user)) {
+            return response()->json([
+                'message' => 'User not found'
+            ], 422);
+        }
+
+        $data = $request->validated();
+
+        if (empty($request->validated('password'))) {
+            $data['password'] = $user->password;
+        } else {
+            $data['password'] = Hash::make($data['password']);
+        }
+
+        $user->update($data);
+
+        return response()->json([
+            'message' => 'User account updated successfully'
+        ]);
+    }
 }

@@ -23,9 +23,9 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'email' => ['required', 'string', 'unique:users,email'],
-            'phone' => ['required', 'string', 'unique:users,phone'],
-            'password' => ['required', 'confirmed'],
+            'email' => ['required', 'string'],
+            'phone' => ['required', 'string'],
+            'password' => ['nullable', 'confirmed'],
             'branch_id' => ['nullable', 'string', 'exists:branches,id']
         ];
     }

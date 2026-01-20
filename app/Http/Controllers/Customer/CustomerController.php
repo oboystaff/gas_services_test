@@ -75,19 +75,6 @@ class CustomerController extends Controller
         $customer = Customer::create($data);
 
         if ($customer) {
-            $userData = [
-                'name' => $customer->name ?? 'N/A',
-                'email' => $customer->customer_id . '@manbahgh.com',
-                'phone' => $customer->contact ?? 'N/A',
-                'password' => Hash::make('manbah123456'),
-                'status' => 'Active',
-                'branch_id' => $customer->branch_id,
-                'customer_id' => $customer->customer_id,
-                'created_by' => $request->user()->id ?? null
-            ];
-
-            User::create($userData);
-
             $assignmentData = [
                 'customer_id' => $customer->customer_id,
                 'recovery_officer_id' => $data['recovery_officer_id'],

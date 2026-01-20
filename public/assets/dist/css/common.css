@@ -24,3 +24,40 @@
     margin-right: 8px;
     cursor: pointer;
 }
+
+.dataTables_wrapper .table-responsive {
+    overflow: visible !important;
+}
+
+.card {
+    overflow: visible;
+}
+
+.card-body {
+    overflow: visible;
+}
+
+@media (max-width: 768px) {
+    .dataTables_wrapper .table-responsive {
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+    }
+}
+
+.dropdown-menu {
+    z-index: 1050;
+}
+
+#zero_config thead th {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+#zero_config tbody td {
+    white-space: nowrap;
+}
+
+#zero_config tbody td:last-child {
+    white-space: nowrap;
+    text-align: center;
+}

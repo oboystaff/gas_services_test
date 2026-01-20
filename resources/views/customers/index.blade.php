@@ -3,7 +3,6 @@
 @section('page-styles')
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/extra-libs/multicheck/multicheck.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/dist/css/datatable.css') }}" />
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
 @endsection
 

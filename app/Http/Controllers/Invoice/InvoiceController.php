@@ -65,20 +65,21 @@ class InvoiceController extends Controller
                     ->whereYear('created_at', $request->year ?? now()->year);
             })
             ->whereRaw('
-                amount > IFNULL((
-                    SELECT SUM(
-                        CASE
-                            WHEN payment_mode = "momo" AND transaction_status = "Success"
-                                THEN COALESCE(amount_paid, 0) + COALESCE(withholding_tax_amount, 0)
-                            WHEN payment_mode != "momo"
-                                THEN COALESCE(amount_paid, 0) + COALESCE(withholding_tax_amount, 0)
-                            ELSE 0
-                        END
-                    )
-                    FROM payments 
-                    WHERE payments.invoice_no = invoices.invoice_no
-                ), 0)
-            ')
+                    ROUND(invoices.amount, 2) >
+                    IFNULL((
+                        SELECT ROUND(SUM(
+                            CASE
+                                WHEN payment_mode = "momo" AND transaction_status = "Success"
+                                    THEN COALESCE(amount_paid, 0) + COALESCE(withholding_tax_amount, 0)
+                                WHEN payment_mode != "momo"
+                                    THEN COALESCE(amount_paid, 0) + COALESCE(withholding_tax_amount, 0)
+                                ELSE 0
+                            END
+                        ), 2)
+                        FROM payments
+                        WHERE payments.invoice_no = invoices.invoice_no
+                    ), 0)
+                ')
             ->get();
 
         if ($request->display == "receivables") {
@@ -107,7 +108,9 @@ class InvoiceController extends Controller
 
             $amount = $totalInvoiceAmount - $totalPayments;
         } else {
-            $amount = $invoices->sum('amount');
+            $amount = $invoices->sum(function ($invoice) {
+                return (float) str_replace(',', '', $invoice->amount);
+            });
         }
 
         $kg = $invoices->sum('kg');
@@ -136,7 +139,7 @@ class InvoiceController extends Controller
             : (float)$request->input('amount');
         $data = $request->validated();
         $data['kg'] = $request->input('kg') ?? '0';
-        $data['amount'] =   $totalAmount ?? 0;
+        $data['amount'] = round((float) $totalAmount, 2) ?? 0;
         $data['created_by'] = $request->user()->id;
         $data['request_id'] = $request->input('request_id') ?? '';
         $data['branch_id'] = $request->input('branch_id') ?? '';
