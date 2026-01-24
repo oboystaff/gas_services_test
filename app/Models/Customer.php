@@ -35,6 +35,11 @@ class Customer extends Model
         return $this->belongsTo(Community::class, 'community_id');
     }
 
+    public function user()
+    {
+        return $this->hasOne(User::class, 'customer_id', 'customer_id');
+    }
+
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');

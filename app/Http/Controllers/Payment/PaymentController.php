@@ -118,7 +118,7 @@ class PaymentController extends Controller
             'delivery_branch' => $payment->invoice->gasRequest->deliveryBranch->name ?? 'N/A',
             'payment_date' => Carbon::parse($payment->created_at)->format('d-M-Y H:i'),
             'description' => 'Gas Cylinder Refill',
-            'amount' => $payment->amount,
+            'amount' => isset($payment->amount) ? $payment->amount : $payment->amount_paid,
             'payment_mode' => strtoupper($payment->payment_mode),
             'reference' => $payment->payment_id . $payment->payment_id . $payment->customer_id,
             'paid_by' => $payment->customer->name ?? 'N/A',

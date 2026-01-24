@@ -36,7 +36,7 @@ class CustomerController extends Controller
     public function show($id)
     {
         $customer = Customer::query()
-            ->with(['branch'])
+            ->with(['branch', 'user'])
             ->where('customer_id', $id)
             ->first();
 
